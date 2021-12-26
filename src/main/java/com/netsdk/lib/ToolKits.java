@@ -468,6 +468,10 @@ public class ToolKits {
 	 * 获取接口错误码和错误信息，用于打印
 	 * @return
 	 */
+	public static String getErrorCodePrint(int errorCode) {
+		return "\n{error code: (0x80000000|" + (errorCode & 0x7fffffff) +").参考  NetSDKLib.java }" 
+					+ " - {error info:" + ErrorCode.getErrorCode(errorCode) + "}\n";
+	}
 	// public static String getErrorCodePrint() {
 	// 	return "\n{error code: (0x80000000|" + (LoginModule.netsdk.CLIENT_GetLastError() & 0x7fffffff) +").参考  NetSDKLib.java }" 
 	// 			+ " - {error info:" + ErrorCode.getErrorCode(LoginModule.netsdk.CLIENT_GetLastError()) + "}\n";
