@@ -4,10 +4,31 @@ import java.io.UnsupportedEncodingException;
 import com.netsdk.lib.NetSDKLib;
 import com.netsdk.lib.ToolKits;
 import com.netsdk.lib.NetSDKLib.LLong;
+import com.netsdk.lib.NetSDKLib.NET_ATTENDANCE_USERINFO;
 import com.netsdk.lib.NetSDKLib.NET_CTRL_CAPTURE_FINGER_PRINT;
+import com.netsdk.lib.NetSDKLib.NET_CTRL_IN_FINGERPRINT_GET;
+import com.netsdk.lib.NetSDKLib.NET_CTRL_IN_FINGERPRINT_REMOVE;
+import com.netsdk.lib.NetSDKLib.NET_CTRL_IN_FINGERPRINT_REMOVE_BY_USERID;
+import com.netsdk.lib.NetSDKLib.NET_CTRL_OUT_FINGERPRINT_GET;
+import com.netsdk.lib.NetSDKLib.NET_CTRL_OUT_FINGERPRINT_REMOVE;
+import com.netsdk.lib.NetSDKLib.NET_CTRL_OUT_FINGERPRINT_REMOVE_BY_USERID;
 import com.netsdk.lib.NetSDKLib.NET_IN_ATTENDANCE_ADDUSER;
+import com.netsdk.lib.NetSDKLib.NET_IN_ATTENDANCE_DELUSER;
+import com.netsdk.lib.NetSDKLib.NET_IN_ATTENDANCE_FINDUSER;
+import com.netsdk.lib.NetSDKLib.NET_IN_ATTENDANCE_GetUSER;
+import com.netsdk.lib.NetSDKLib.NET_IN_ATTENDANCE_ModifyUSER;
+import com.netsdk.lib.NetSDKLib.NET_IN_FINGERPRINT_GETBYUSER;
+import com.netsdk.lib.NetSDKLib.NET_IN_FINGERPRINT_INSERT_BY_USERID;
 import com.netsdk.lib.NetSDKLib.NET_OUT_ATTENDANCE_ADDUSER;
+import com.netsdk.lib.NetSDKLib.NET_OUT_ATTENDANCE_DELUSER;
+import com.netsdk.lib.NetSDKLib.NET_OUT_ATTENDANCE_FINDUSER;
+import com.netsdk.lib.NetSDKLib.NET_OUT_ATTENDANCE_GetUSER;
+import com.netsdk.lib.NetSDKLib.NET_OUT_ATTENDANCE_ModifyUSER;
+import com.netsdk.lib.NetSDKLib.NET_OUT_FINGERPRINT_GETBYUSER;
+import com.netsdk.lib.NetSDKLib.NET_OUT_FINGERPRINT_INSERT_BY_USERID;
 import com.netsdk.lib.NetSDKLib.fAnalyzerDataCallBack;
+
+import com.sun.jna.Memory;
 /**
  * \if ENGLISH_LANG
  * Attendance Interface
@@ -81,6 +102,329 @@ public class AttendanceModule {
 		
 		return bRet;
 	}
+
+	/**
+	 * 考勤删除用户
+	 * @param userId   用户ID
+	 */
+	public static boolean deleteUser(String userId) {
+		
+		removeFingerByUserId(userId); 	// 先去删除指纹
+		
+		/*
+		 * 入参
+		 */
+		NET_IN_ATTENDANCE_DELUSER stuIn = new NET_IN_ATTENDANCE_DELUSER();
+		stringToByteArray(userId, stuIn.szUserID);
+		
+		/*
+		 * 出参
+		 */
+		NET_OUT_ATTENDANCE_DELUSER stuOut = new NET_OUT_ATTENDANCE_DELUSER();
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_DelUser(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_DelUser Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+		}
+		
+		return bRet;
+	}
+
+	/**
+	 * 考勤修改用户
+	 * @param userId   用户ID
+	 * @param userName 用户名
+	 * @param cardNo   卡号
+	 */
+	public static boolean modifyUser(String userId, String userName, String cardNo) {
+		
+		/*
+		 * 入参
+		 */
+		NET_IN_ATTENDANCE_ModifyUSER stuIn = new NET_IN_ATTENDANCE_ModifyUSER();
+		stringToByteArray(userId, stuIn.stuUserInfo.szUserID);
+		stringToByteArray(userName, stuIn.stuUserInfo.szUserName);
+		stringToByteArray(cardNo, stuIn.stuUserInfo.szCardNo);
+		
+		/*
+		 * 出参
+		 */
+		NET_OUT_ATTENDANCE_ModifyUSER stuOut = new NET_OUT_ATTENDANCE_ModifyUSER();
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_ModifyUser(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_ModifyUser Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+		}
+		
+		return bRet;
+	}
+	
+	/**
+	 * 考勤机 查找用户
+	 * @param nOffset   		查询偏移
+	 * @param nPagedQueryCount 	查询个数
+	 * @return UserData[] 		用户信息组
+	 */
+	public static UserData[] findUser(int nOffset, int nPagedQueryCount) {
+		
+		/*
+		 * 入参
+		 */
+		NET_IN_ATTENDANCE_FINDUSER stuIn = new NET_IN_ATTENDANCE_FINDUSER();
+		stuIn.nOffset = nOffset;
+		stuIn.nPagedQueryCount = nPagedQueryCount;
+		
+		/*
+		 * 出参
+		 */
+		NET_OUT_ATTENDANCE_FINDUSER stuOut = new NET_OUT_ATTENDANCE_FINDUSER();
+		NET_ATTENDANCE_USERINFO[]  userInfo = new NET_ATTENDANCE_USERINFO[nPagedQueryCount];
+		for(int i = 0; i < nPagedQueryCount; i++) {
+			userInfo[i] = new NET_ATTENDANCE_USERINFO();
+		}
+		stuOut.nMaxUserCount = nPagedQueryCount;
+		stuOut.stuUserInfo = new Memory(userInfo[0].size() * stuOut.nMaxUserCount);
+		stuOut.stuUserInfo.clear(userInfo[0].size() * stuOut.nMaxUserCount);
+		ToolKits.SetStructArrToPointerData(userInfo, stuOut.stuUserInfo);  // 将数组内存拷贝到Pointer
+		stuOut.nMaxPhotoDataLength = 128;
+		stuOut.pbyPhotoData = new Memory(stuOut.nMaxPhotoDataLength);    // 申请内存
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_FindUser(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_FindUser Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+			return null;
+		}
+		
+		ToolKits.GetPointerDataToStructArr(stuOut.stuUserInfo, userInfo); // 将 Pointer 的内容 输出到   数组
+		
+		UserData[]  userData = new UserData[stuOut.nRetUserCount];
+		for(int i = 0; i < stuOut.nRetUserCount; i++) {
+			userData[i] = new UserData();
+			try {
+				userData[i].userId = new String(userInfo[i].szUserID, "GBK").trim();
+				userData[i].userName = new String(userInfo[i].szUserName, "GBK").trim();
+				userData[i].cardNo = new String(userInfo[i].szCardNo, "GBK").trim();
+			}catch(Exception e) {	// 如果转化失败就采用原始数据
+				userData[i].userId = new String(userInfo[i].szUserID).trim();
+				userData[i].userName = new String(userInfo[i].szUserName).trim();
+				userData[i].cardNo = new String(userInfo[i].szCardNo).trim();
+			}
+			
+//			getFingerByUserId(userData[i].userId, userData[i]); // 获取指纹信息
+		} 
+		
+		UserData.nTotalUser = stuOut.nTotalUser;
+		
+		return userData;
+	}
+
+
+	/**
+	 * 考勤获取用户信息
+	 * @param userId   	用户ID
+	 * @return UserData 用户信息
+	 */
+	public static UserData getUser(String userId) {
+		
+		/*
+		 * 入参
+		 */
+		NET_IN_ATTENDANCE_GetUSER stuIn = new NET_IN_ATTENDANCE_GetUSER();
+		stringToByteArray(userId, stuIn.szUserID);
+		
+		/*
+		 * 出参
+		 */
+		NET_OUT_ATTENDANCE_GetUSER stuOut = new NET_OUT_ATTENDANCE_GetUSER();
+		stuOut.nMaxLength = 128;
+		stuOut.pbyPhotoData = new Memory(stuOut.nMaxLength);    // 申请内存
+		stuOut.pbyPhotoData.clear(stuOut.nMaxLength);
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_GetUser(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_GetUser Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+			return null;
+		}
+		
+		UserData userData = new UserData();
+		try {
+			userData.userId = new String(stuOut.stuUserInfo.szUserID, "GBK").trim();
+			userData.userName = new String(stuOut.stuUserInfo.szUserName, "GBK").trim();
+			userData.cardNo = new String(stuOut.stuUserInfo.szCardNo, "GBK").trim();
+		}catch(Exception e) {	// 如果转化失败就采用原始数据
+			userData.userId = new String(stuOut.stuUserInfo.szUserID).trim();
+			userData.userName = new String(stuOut.stuUserInfo.szUserName).trim();
+			userData.cardNo = new String(stuOut.stuUserInfo.szCardNo).trim();
+		}
+		
+//		getFingerByUserId(userId, userData); // 获取指纹信息
+		
+		return userData;
+	}
+
+	/**
+	 * 考勤机  通过用户ID插入指纹数据
+	 * @param userId   			用户ID
+	 * @param szFingerPrintInfo 指纹信息
+	 */
+	public static boolean insertFingerByUserId(String userId, byte[] szFingerPrintInfo) {
+		
+		/*
+		 * 入参
+		 */
+		NET_IN_FINGERPRINT_INSERT_BY_USERID stuIn = new NET_IN_FINGERPRINT_INSERT_BY_USERID();
+		stringToByteArray(userId, stuIn.szUserID);
+		stuIn.nPacketCount = 1;
+		stuIn.nSinglePacketLen = szFingerPrintInfo.length;
+		stuIn.szFingerPrintInfo = new Memory(stuIn.nPacketCount * stuIn.nSinglePacketLen);    // 申请内存
+		stuIn.szFingerPrintInfo.clear(stuIn.nPacketCount * stuIn.nSinglePacketLen);
+		stuIn.szFingerPrintInfo.write(0, szFingerPrintInfo, 0, szFingerPrintInfo.length);
+		
+		/*
+		 * 出参
+		 */
+		NET_OUT_FINGERPRINT_INSERT_BY_USERID stuOut = new NET_OUT_FINGERPRINT_INSERT_BY_USERID();
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_InsertFingerByUserID(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_InsertFingerByUserID Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+		}
+		
+		return bRet;
+	}
+
+	/**
+	 * 考勤机 删除单个用户下所有指纹数据
+	 * @param userId   用户ID
+	 */
+	public static boolean removeFingerByUserId(String userId) {
+		
+		/*
+		 * 入参
+		 */
+		NET_CTRL_IN_FINGERPRINT_REMOVE_BY_USERID stuIn = new NET_CTRL_IN_FINGERPRINT_REMOVE_BY_USERID();
+		stringToByteArray(userId, stuIn.szUserID);
+		
+		/*
+		 * 出参
+		 */
+		NET_CTRL_OUT_FINGERPRINT_REMOVE_BY_USERID stuOut = new NET_CTRL_OUT_FINGERPRINT_REMOVE_BY_USERID();
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_RemoveFingerByUserID(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_RemoveFingerByUserID Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+		}
+		
+		return bRet;
+	}
+	
+
+	/**
+	 * 考勤机 通过指纹ID删除指纹数据
+	 * @param nFingerPrintID  指纹ID
+	 */
+	public static boolean removeFingerRecord(int nFingerPrintID) {
+		
+		/*
+		 * 入参
+		 */
+		NET_CTRL_IN_FINGERPRINT_REMOVE stuIn = new NET_CTRL_IN_FINGERPRINT_REMOVE();
+		stuIn.nFingerPrintID = nFingerPrintID;
+		
+		/*
+		 * 出参
+		 */
+		NET_CTRL_OUT_FINGERPRINT_REMOVE stuOut = new NET_CTRL_OUT_FINGERPRINT_REMOVE();
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_RemoveFingerRecord(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_RemoveFingerRecord Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+		}
+		
+		return bRet;
+	}
+	
+
+	/**
+	 * 考勤机 通过指纹ID获取指纹数据
+	 * @param nFingerPrintID  指纹ID
+	 * @return userData 用户数据
+	 */
+	public static UserData getFingerRecord(int nFingerPrintID) {
+		
+		/*
+		 * 入参
+		 */
+		NET_CTRL_IN_FINGERPRINT_GET stuIn = new NET_CTRL_IN_FINGERPRINT_GET();
+		stuIn.nFingerPrintID = nFingerPrintID;
+		
+		/*
+		 * 出参
+		 */
+		NET_CTRL_OUT_FINGERPRINT_GET stuOut = new NET_CTRL_OUT_FINGERPRINT_GET();
+		stuOut.nMaxFingerDataLength = nMaxFingerPrintSize;
+		stuOut.szFingerPrintInfo = new Memory(stuOut.nMaxFingerDataLength);    // 申请内存
+		stuOut.szFingerPrintInfo.clear(stuOut.nMaxFingerDataLength);
+
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_GetFingerRecord(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_GetFingerRecord Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+			return null;
+		}
+		
+		if (stuOut.nRetLength == 0) {
+			System.err.println("GetFingerRecord Failed nRetLength == 0!");
+		}
+		
+		UserData userData = new UserData();
+		userData.userId = new String(stuOut.szUserID).trim();
+		userData.nFingerPrintIDs = new int[1];
+		userData.nFingerPrintIDs[0] = nFingerPrintID; 
+		userData.szFingerPrintInfo = new byte[1][stuOut.nRetLength];
+		stuOut.szFingerPrintInfo.read(0, userData.szFingerPrintInfo[0], 0, stuOut.nRetLength);
+		
+		return userData;
+	}
+
+
+	/**
+	 * 考勤机 通过用户ID查找该用户下的所有指纹数据
+	 * @param userId   用户ID
+	 * @param userData 用户数据
+	 */
+	public static boolean getFingerByUserId(String userId, UserData userData) {
+		
+		/*
+		 * 入参
+		 */
+		NET_IN_FINGERPRINT_GETBYUSER stuIn = new NET_IN_FINGERPRINT_GETBYUSER();
+		stringToByteArray(userId, stuIn.szUserID);
+		
+		/*
+		 * 出参
+		 */
+		NET_OUT_FINGERPRINT_GETBYUSER stuOut = new NET_OUT_FINGERPRINT_GETBYUSER();
+		stuOut.nMaxFingerDataLength = NetSDKLib.NET_MAX_FINGER_PRINT * nMaxFingerPrintSize;
+		stuOut.pbyFingerData = new Memory(stuOut.nMaxFingerDataLength);    // 申请内存
+		stuOut.pbyFingerData.clear(stuOut.nMaxFingerDataLength);
+		
+		boolean bRet = LoginModule.netsdk.CLIENT_Attendance_GetFingerByUserID(LoginModule.m_hLoginHandle, stuIn, stuOut, TIME_OUT);
+		if (!bRet) {
+			System.err.printf("CLIENT_Attendance_GetFingerByUserID Failed!" + ToolKits.getErrorCodePrint(LoginModule.netsdk.CLIENT_GetLastError()));
+		}else {
+			userData.nFingerPrintIDs = new int[stuOut.nRetFingerPrintCount];
+			userData.szFingerPrintInfo = new byte[stuOut.nRetFingerPrintCount][stuOut.nSinglePacketLength];
+			int offset = 0;
+			for (int i = 0; i < stuOut.nRetFingerPrintCount; ++i) {
+				userData.nFingerPrintIDs[i] = stuOut.nFingerPrintIDs[i];
+				stuOut.pbyFingerData.read(offset, userData.szFingerPrintInfo[i], 0, stuOut.nSinglePacketLength);
+				offset += stuOut.nSinglePacketLength;
+			}
+		}
+
+		return bRet;
+	}
+
 
     /**
 	 * 指纹采集
