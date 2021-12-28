@@ -1,0 +1,35 @@
+Begin Time:2021-12-28T15:11:25.231
+[2021-12-28T15:11:25.232 info Netsdk:51492 28100:23464 AVNetSDKMgr.cpp:500]Load avnetsdk library dynamically
+[2021-12-28T15:11:25.234 info Netsdk:51492 28100:23464 AVNetSDKMgr.cpp:544]avnetsdk module handle: 00000000317C0000
+
+[2021-12-28T15:11:25.234 info Netsdk:51492 28100:23464 AVNetSDKMgr.cpp:815]Load configsdk dynamically
+[2021-12-28T15:11:25.235 info Netsdk:51492 28100:23464 dhnetsdk.cpp:253]Enter CLIENT_SetAutoReconnect:[cbAutoConnect=0000000000000000, dwUser=0000000000000000].
+[2021-12-28T15:11:25.235 info Netsdk:51492 28100:23464 dhnetsdk.cpp:255]Leave CLIENT_SetAutoReconnect.
+[2021-12-28T15:11:25.235 info Netsdk:51492 28100:23464 dhnetsdk.cpp:273]Enter CLIENT_SetConnectTime:[nWaitTime=5000, nTryTimes=1].
+[2021-12-28T15:11:25.235 info Netsdk:51492 28100:23464 dhnetsdk.cpp:286]Leave CLIENT_SetConnectTime.
+[2021-12-28T15:11:25.261 info Netsdk:51492 28100:23464 dhnetsdk.cpp:297]Enter CLIENT_SetNetworkParam:[nWaittime=0, nConnectTime=10000, nConnectTryNum=0, nSubConnectSpaceTime=0, nGetDevInfoTime=3000, nConnectBufSize=0, nGetConnInfoTime=3000, nSearchRecordTime=0, nsubDisconnetTime=0, byNetType=0, byPlaybackBufSize=0, bDetectDisconnTime=0, bKeepLifeInterval=0, nPicBufSize=0].
+[2021-12-28T15:11:25.261 info Netsdk:51492 28100:23464 dhnetsdk.cpp:312]Leave CLIENT_SetNetworkParam.
+[2021-12-28T15:11:25.500 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=0000000000934B30, dwUserData=0000000000000000, szLocalIp=192.168.109.1, dwWaitTime=6000.]
+[2021-12-28T15:11:25.504 info Netsdk:51492 28100:23780 dhnetsdk.cpp:199]Enter CLIENT_InitEx:[cbDisConnect=0000000000000000, dwUser=0000000000000000, lpInitParam=0000000000000000].
+[2021-12-28T15:11:25.504 info Netsdk:51492 28100:23780 AVNetSDKMgr.cpp:728]Test avnetsdk module handle: 00000000317C0000
+
+[2021-12-28T15:11:25.504 info Netsdk:51492 28100:23780 dhnetsdk.cpp:222]Leave CLIENT_InitEx.
+[2021-12-28T15:11:25.505 info Netsdk:51492 28100:23780 Manager.cpp:14824]-------------------Log file reset, log number:10-log size:10240------------------
+Begin Time:2021-12-28T15:11:25.506
+[2021-12-28T15:11:25.506 info Netsdk:51492 28100:23780 dhnetsdk.cpp:253]Enter CLIENT_SetAutoReconnect:[cbAutoConnect=0000000000000000, dwUser=0000000000000000].
+[2021-12-28T15:11:25.506 info Netsdk:51492 28100:23780 dhnetsdk.cpp:255]Leave CLIENT_SetAutoReconnect.
+[2021-12-28T15:11:25.506 info Netsdk:51492 28100:23780 dhnetsdk.cpp:273]Enter CLIENT_SetConnectTime:[nWaitTime=5000, nTryTimes=1].
+[2021-12-28T15:11:25.506 info Netsdk:51492 28100:23780 dhnetsdk.cpp:286]Leave CLIENT_SetConnectTime.
+[2021-12-28T15:11:25.529 info Netsdk:51492 28100:23780 dhnetsdk.cpp:297]Enter CLIENT_SetNetworkParam:[nWaittime=0, nConnectTime=10000, nConnectTryNum=0, nSubConnectSpaceTime=0, nGetDevInfoTime=3000, nConnectBufSize=0, nGetConnInfoTime=3000, nSearchRecordTime=0, nsubDisconnetTime=0, byNetType=0, byPlaybackBufSize=0, bDetectDisconnTime=0, bKeepLifeInterval=0, nPicBufSize=0].
+[2021-12-28T15:11:25.529 info Netsdk:51492 28100:23780 dhnetsdk.cpp:312]Leave CLIENT_SetNetworkParam.
+[2021-12-28T15:11:25.780 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=000000003123CEF0, dwUserData=0000000000000000, szLocalIp=192.168.109.1, dwWaitTime=6000.]
+[2021-12-28T15:11:31.511 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
+[2021-12-28T15:11:31.519 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=0000000031240F00, dwUserData=0000000000000000, szLocalIp=192.168.136.1, dwWaitTime=6000.]
+[2021-12-28T15:11:31.791 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
+[2021-12-28T15:11:31.797 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=0000000031248F20, dwUserData=0000000000000000, szLocalIp=192.168.136.1, dwWaitTime=6000.]
+[2021-12-28T15:11:37.532 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
+[2021-12-28T15:11:37.540 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=000000003124CF30, dwUserData=0000000000000000, szLocalIp=192.168.1.15, dwWaitTime=6000.]
+[2021-12-28T15:11:37.807 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
+[2021-12-28T15:11:37.813 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=0000000031250F40, dwUserData=0000000000000000, szLocalIp=192.168.1.15, dwWaitTime=6000.]
+[2021-12-28T15:11:43.551 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
+[2021-12-28T15:11:43.823 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
