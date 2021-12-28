@@ -33,3 +33,8 @@ Begin Time:2021-12-28T15:11:25.506
 [2021-12-28T15:11:37.813 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8603]Enter CLIENT_SearchDevicesByIPs. [pIpSearchInfo=0000000031250F40, dwUserData=0000000000000000, szLocalIp=192.168.1.15, dwWaitTime=6000.]
 [2021-12-28T15:11:43.551 info Netsdk:51492 28100:34532 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
 [2021-12-28T15:11:43.823 info Netsdk:51492 28100:33880 dhnetsdk.cpp:8611]Leave CLIENT_SearchDevicesByIPs. ret:1.
+[2021-12-28T17:26:33.332 info Netsdk:51492 28100:30392 dhnetsdk.cpp:199]Enter CLIENT_InitEx:[cbDisConnect=0000000000000000, dwUser=0000000000000000, lpInitParam=0000000000000000].
+[2021-12-28T17:26:33.332 info Netsdk:51492 28100:30392 AVNetSDKMgr.cpp:728]Test avnetsdk module handle: 00000000317C0000
+
+[2021-12-28T17:26:33.332 info Netsdk:51492 28100:30392 dhnetsdk.cpp:222]Leave CLIENT_InitEx.
+[2021-12-28T17:26:33.334 info Netsdk:51492 28100:30392 Manager.cpp:14824]-------------------Log file reset, log number:10-log size:10240------------------
