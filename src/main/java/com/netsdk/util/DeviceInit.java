@@ -30,11 +30,15 @@ public class DeviceInit {
     }
     public static void init(){
         LoginModule.init(null, null);
-        DeviceInit instance = DeviceInit.getInstance();
-        instance.search("192.168.1.108");
+        // DeviceInit instance = DeviceInit.getInstance();
+        // instance.search("192.168.1.108");
     }
 
-    private void search(String destIP){
+    public static void search(String destIP){
+        DeviceInit.getInstance().searchByIP(destIP);
+    }
+
+    private void searchByIP(String destIP){
         executorService.execute(new Runnable(){
             @Override
             public void run() {
@@ -66,6 +70,7 @@ public class DeviceInit {
             DEVICE_NET_INFO_EX deviceInfo = new DEVICE_NET_INFO_EX();
             ToolKits.GetPointerData(pDevNetInfo, deviceInfo);
             String mac = new String(deviceInfo.szMac) ;
+            //可在这里处理数据存储，或用事件机制将数据查询结果丢出去
             // if(!this.mac)
             System.out.println(mac);
         }
