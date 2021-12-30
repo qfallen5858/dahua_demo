@@ -1,5 +1,7 @@
 package com.kanq.dahua_demo.controller;
 
+import com.netsdk.util.DeviceInit;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     @RequestMapping(value = "/say")
     public String test(){
+        DeviceInit.search("192.168.1.108");
         return "success";
     }
 }
